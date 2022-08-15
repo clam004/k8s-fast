@@ -15,8 +15,8 @@ Run from active Python environment using `uvicorn`:
 
 ## Build and run the Docker container:
 
-    docker build -t t-rl:v1 .
-    docker run -d -p 8080:8080 --name k8:v1
+    docker build -t reinformer:v1 .
+    docker run -d -p 8080:8080 --name reinformer:v1
 
 Navigate to http://localhost:8080/docs to test the API.
 
