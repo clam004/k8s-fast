@@ -1,0 +1,10 @@
+accelerate
+datasets
+matplotlib
+pandas
+python-dotenv
+gunicorn
+torch
+tqdm
+transformers
+uvicorn
