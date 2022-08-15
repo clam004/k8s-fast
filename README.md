@@ -13,10 +13,10 @@ Run from active Python environment using `uvicorn`:
     pip install -r requirements.txt
     uvicorn service.main:app --host 0.0.0.0 --port 8080 --reload
 
-Or build and run the Docker container:
+## Build and run the Docker container:
 
-    docker build -t 4oh4/kubernetes-fastapi:1.0.0 .
-    docker run -p 8080:8080 --name kubernetes-fastapi 4oh4/kubernetes-fastapi:1.0.0
+    docker build -t t-rl:v1 .
+    docker run -d -p 8080:8080 --name k8:v1
 
 Navigate to http://localhost:8080/docs to test the API.
 
