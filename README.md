@@ -1,8 +1,6 @@
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+# k8s-fast (kubernetes-fastapi)
 
-# kubernetes-fastapi
-
-Template for a Python FastAPI with Dockerfile and configuration for Kubernetes
+Python FastAPI with Dockerfile and configuration for Kubernetes
 
 ## Development setup
 
@@ -13,10 +11,12 @@ Run from active Python environment using `uvicorn`:
     pip install -r requirements.txt
     uvicorn service.main:app --host 0.0.0.0 --port 8080 --reload
 
-## Build and run the Docker container:
+Or
 
-    docker build -t k8fast:v1 .
-    docker run -d -p 8080:8080 --name k8fast k8fast:v1
+Build and run the Docker container:
+
+    docker build -t clam004/k8s-fast:1.0 .
+    docker run -d -p 8080:8080 --name k8s-fast clam004/k8s-fast:1.0
 
 Navigate to http://localhost:8080/docs to test the API.
 
@@ -34,9 +34,13 @@ The API responds with a greeting, and the result of a long-running calculation o
 
 ## Push the container image to Docker Hub
 
-If desired, push the container to Docker Hub yourself, and change all references to the image accordingly. Replace "4oh4" with your Docker Hub ID):
+If you dont already, you need a DockerHUb account and to be signed-in in terminal
 
-    docker push 4oh4/kubernetes-fastapi:1.0.0
+    docker login
+
+Before using kubernetes, push the container to Docker Hub, and change all references to the image accordingly. Replace "clam004" with your Docker Hub ID:
+
+    docker push clam004/k8s-fast:1.0
 
 You may also need to make the image public as well.
 
