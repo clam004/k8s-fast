@@ -3,4 +3,4 @@ import os
 
 ALLOWED_HOSTS = CommaSeparatedStrings(os.getenv("ALLOWED_HOSTS", ""))
 API_V1_STR = "/api/v1"
-PROJECT_NAME = "reinformer"
+PROJECT_NAME = "K8s-fastAPI"
