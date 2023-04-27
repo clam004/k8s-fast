@@ -7,8 +7,8 @@ from service.core.logic.business_logic import run_prime_factor_calculation
 router = APIRouter()
 
 
-# @router.get("/example", tags=["example get"])
-# def example_get():
+@router.get("/example", tags=["example get"])
+def example_get():
 #     """
 #     Say hej!
 
@@ -17,15 +17,17 @@ router = APIRouter()
 #     And this path operation will:
 #     * return "hej!"
 #     """
-#     return {"msg": "Hej!"}
+    return {"msg": "Hej!"}
 
 
 @router.post("/hello", response_model=MessageOutput, tags=["hello post"])
 def hello_endpoint(inputs: MessageInput):
-    """
-    Respond to requests on the hello endpoint
 
     """
+    Respond to requests on the hello endpoint
+    """
+
+    print(inputs)
 
     n, largest_prime_factor, elapsed_time = run_prime_factor_calculation()
 
