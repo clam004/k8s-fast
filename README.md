@@ -52,6 +52,10 @@ push the container to Docker Hub, and change all references to the image accordi
 
 You may also need to make the image public as well.
 
+## get minikube
+
+https://minikube.sigs.k8s.io/docs/start/ 
+
 ## Kubernetes deployment
 
     kubectl apply -f api.yaml
@@ -70,6 +74,18 @@ To scale the deployment, apply a HorizontalPodAutoscaler. Either:
 
     kubectl apply -f autoscale.yaml
 
+like this:
+
+    (venv) you@you % kubectl apply -f api.yaml
+    service/kf-api-svc created
+    deployment.apps/kf-api created
+    (venv) you@you % kubectl apply -f autoscale.yaml 
+    horizontalpodautoscaler.autoscaling/kf-api-hpa created
+    (venv) you@you %  kubectl port-forward service/kf-api-svc 8080
+    Forwarding from 127.0.0.1:8080 -> 8080
+    Forwarding from [::1]:8080 -> 8080
+    Handling connection for 8080
+
 or:
 
     kubectl autoscale deployment kf-api --cpu-percent=50 --min=1 --max=10
@@ -80,6 +96,16 @@ Use `locust` to simulate a high load on the API
 
     pip install locust
     locust
+    (k8_env) you@you % locust
+    [2023-04-27 18:51:08,066] ..../INFO/locust.main: Starting web interface at http://0.0.0.0:8089 (accepting connections from all network interfaces)
+
+this will deploy the browser interface to http://0.0.0.0:8089 
+
+to test the endpoint http://0.0.0.0:8080/api/v1/hello/ 
+
+enter http://0.0.0.0:8080 into the Host input field 
+
+![Test drive the API](./resources/locustboard2.png)
 
 ![Load testing with Locust](./resources/locust.png)
 
@@ -88,12 +114,6 @@ Use `locust` to simulate a high load on the API
     kubectl delete deployment kf-api
     kubectl delete svc kf-api-svc
     kubectl delete hpa kf-api-hpa
-
-## Google Cloud clean-up
-
-    gcloud container clusters delete my-cluster-name
-
-** Check all resources have been deleted in the console - if in doubt, delete the project as well **
 
 ## Acknowledgements
 
