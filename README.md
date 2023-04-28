@@ -68,6 +68,22 @@ or
 
     (venv) you@you % kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.4.1/components.yaml 
 
+You need to edit this file 
+
+    (venv) you@you % kubectl edit deployments.apps -n kube-system metrics-server  
+
+to include `- --kubelet-insecure-tls=true` in the location below.
+
+```
+    spec:
+      containers:
+      - args:
+        - --cert-dir=/tmp
+        - --secure-port=4443
+        - --kubelet-insecure-tls=true
+        - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+```
+
 ## Kubernetes deployment
 
     kubectl apply -f api.yaml
@@ -113,8 +129,11 @@ Check the current status of autoscaler
 
     (venv) you@you % kubectl get hpa
     NAME         REFERENCE           TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
-    kf-api       Deployment/kf-api   <unknown>/50%   1         10        1          73s
     kf-api-hpa   Deployment/kf-api   1%/50%          1         10        1          10h
+
+    (venv) you@you % kubectl get hpa kf-api --watch    
+    NAME     REFERENCE           TARGETS   MINPODS   MAXPODS   REPLICAS   AGE
+    kf-api   Deployment/kf-api   2%/50%    1         10        1          113s
 
 
 For continuous monitoring
@@ -151,6 +170,19 @@ enter http://0.0.0.0:8080 into the Host input field
 
 ![Load testing with Locust](./resources/locust.png)
 
+As Locust swarms your endpoint, you should see the usage go up on your horizontal pod scaler
+
+    (venv) you@you % kubectl get hpa kf-api --watch    
+    NAME     REFERENCE           TARGETS   MINPODS   MAXPODS   REPLICAS   AGE
+    kf-api   Deployment/kf-api   2%/50%    1         10        1          113s
+    kf-api   Deployment/kf-api   22%/50%   1         10        1          2m45s
+    kf-api   Deployment/kf-api   323%/50%   1         10        1          3m45s
+    kf-api   Deployment/kf-api   323%/50%   1         10        4          4m
+    kf-api   Deployment/kf-api   323%/50%   1         10        7          4m15s
+    kf-api   Deployment/kf-api   308%/50%   1         10        7          4m45s
+
+you should see what if the TARGETS ration goes abive 50%:50%, more REPLICAS are spun up
+
 ## Teardown Kubernetes
 
     kubectl delete deployment kf-api
@@ -166,16 +198,9 @@ Inspiration and code for FastAPI setup:
 
 https://www.linuxsysadmins.com/service-unavailable-kubernetes-metrics/
 
+https://stackoverflow.com/questions/54106725/docker-kubernetes-mac-autoscaler-unable-to-find-metrics 
+
 
 ## helpful snippets
 
-    $ kubectl edit deployments.apps -n kube-system metrics-server  
-```
-    spec:
-      containers:
-      - args:
-        - --cert-dir=/tmp
-        - --secure-port=4443
-        - --kubelet-insecure-tls=true
-        - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
-```
+
