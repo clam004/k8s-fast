@@ -100,6 +100,7 @@ If working locally, e.g. using `minikube`, use port forwarding to expose the ser
     (venv) you@you % kubectl apply -f api.yaml
     service/kf-api-svc created
     deployment.apps/kf-api created
+
     (venv) you@you %  kubectl port-forward service/kf-api-svc 8080
     Forwarding from 127.0.0.1:8080 -> 8080
     Forwarding from [::1]:8080 -> 8080
@@ -110,27 +111,10 @@ which are all the same thing.
 
 To scale the deployment, apply a HorizontalPodAutoscaler. Either:
 
-    kubectl apply -f autoscale.yaml
-
-note sure which order these go in
-
-    (venv) you@you % kubectl apply -f api.yaml
-    service/kf-api-svc created
-    deployment.apps/kf-api created
-
     (venv) you@you % kubectl apply -f autoscale.yaml 
     horizontalpodautoscaler.autoscaling/kf-api-hpa created
 
-    (venv) you@you %  kubectl port-forward service/kf-api-svc 8080
-    Forwarding from 127.0.0.1:8080 -> 8080
-    Forwarding from [::1]:8080 -> 8080
-    Handling connection for 8080
-
 or:
-
-    kubectl autoscale deployment kf-api --cpu-percent=50 --min=1 --max=10
-
-like this:
 
     (venv) you@you % kubectl autoscale deployment kf-api --cpu-percent=50 --min=1 --max=10
     horizontalpodautoscaler.autoscaling/kf-api autoscaled
@@ -193,8 +177,19 @@ As Locust swarms your endpoint, you should see the usage go up on your horizonta
     kf-api   Deployment/kf-api   47%/50%    1         10        7          5m45s
     kf-api   Deployment/kf-api   47%/50%    1         10        7          6m45s
 
-you should see what if the TARGETS ratio goes above 50%:50%, more REPLICAS are spun up
+you should see that if the TARGETS ratio goes above 50%:50%, more REPLICAS are spun up
 to meet that demand, bringing down the ratio below 50%:50%
+
+you can see allt he new pods that have been spun up
+
+    (venv) carson@cc-laptop-carson k8s-fast % kubectl get pods
+    NAME                      READY   STATUS    RESTARTS       AGE
+    kf-api-5464676b6f-594l2   1/1     Running   0              4m45s
+    kf-api-5464676b6f-68klv   1/1     Running   1 (105m ago)   5h15m
+    kf-api-5464676b6f-gz555   1/1     Running   0              4m30s
+    kf-api-5464676b6f-nrxjw   1/1     Running   0              4m30s
+    kf-api-5464676b6f-q95mp   1/1     Running   0              4m45s
+    kf-api-5464676b6f-vhdpp   1/1     Running   0              5m45s
 
 ## Teardown Kubernetes
 
@@ -215,5 +210,99 @@ https://stackoverflow.com/questions/54106725/docker-kubernetes-mac-autoscaler-un
 
 
 ## helpful snippets
+
+## Trouble shooting your deployment
+
+To see the logs that would have been streamed to you in your terminal had you done `uvicorn service.main:app --host 0.0.0.0 --port 8080 --reload` only to view those outputs within your pod/container, get the name of your pod:
+
+    (venv) % kubectl get pods 
+    NAME                      READY   STATUS    RESTARTS      AGE
+    kf-api-5464676b6f-68klv   1/1     Running   1 (91m ago)   5h1m
+
+and use that name to follow that pod's outputs in real time using `kubectl logs -f <pod-id>`
+
+    (venv) carson@cc-laptop-carson k8s-fast % kubectl logs kf-api-5464676b6f-68klv --follow
+    INFO:     Started server process [1]
+    INFO:     Waiting for application startup.
+    INFO:     Application startup complete.
+    INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
+    INFO:     127.0.0.1:58870 - "GET / HTTP/1.1" 404 Not Found
+    INFO:     127.0.0.1:58870 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+    INFO:     127.0.0.1:58870 - "GET / HTTP/1.1" 404 Not Found
+    INFO:     127.0.0.1:32992 - "GET /openapi.json HTTP/1.1" 200 OK
+    INFO:     127.0.0.1:44500 - "POST /api/v1/hello HTTP/1.1" 200 OK
+
+You may encounter something like this:
+
+    (venv) you@you % kubectl get hpa
+    NAME         REFERENCE           TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+    kf-api-hpa   Deployment/kf-api   <unknown>/50%          1         10        1          10h
+
+You can debug this by
+
+    % kubectl describe hpa 
+
+or 
+
+    (venv) % kubectl describe hpa kf-api   
+    Name:                     kf-api
+    Namespace:                default
+    Labels:                   <none>
+    Annotations:              autoscaling.alpha.kubernetes.io/conditions:
+                                [{"type":"AbleToScale","status":"True","lastTransitionTime":"2023-04-28T15:21:38Z","reason":"ReadyForNewScale","message":"recommended size...
+                            autoscaling.alpha.kubernetes.io/current-metrics:
+                                [{"type":"Resource","resource":{"name":"cpu","currentAverageUtilization":2,"currentAverageValue":"5m"}}]
+    CreationTimestamp:        Fri, 28 Apr 2023 08:21:23 -0700
+    Reference:                Deployment/kf-api
+    Target CPU utilization:   50%
+    Current CPU utilization:  2%
+    Min replicas:             1
+    Max replicas:             10
+    Deployment pods:          1 current / 1 desired
+    Events:
+    Type    Reason             Age                 From                       Message
+    ----    ------             ----                ----                       -------
+    Normal  SuccessfulRescale  24m                 horizontal-pod-autoscaler  New size: 2; reason: cpu resource utilization (percentage of request) above target
+    Normal  SuccessfulRescale  23m                 horizontal-pod-autoscaler  New size: 4; reason: cpu resource utilization (percentage of request) above target
+    Normal  SuccessfulRescale  23m                 horizontal-pod-autoscaler  New size: 6; reason: cpu resource utilization (percentage of request) above target
+    Normal  SuccessfulRescale  15m (x2 over 115m)  horizontal-pod-autoscaler  New size: 1; reason: All metrics below target
+
+When doing horizontal pod scalling, how do i get logs from all the pods? 
+https://theiconic.tech/tail-logs-from-multiple-kubernetes-pods-the-easy-way-71401b84d7f 
+https://spot.io/resources/kubernetes-architecture/kubernetes-tutorial-successful-deployment-of-elasticsearch/
+https://stackoverflow.com/questions/33069736/how-do-i-get-logs-from-all-pods-of-a-kubernetes-replication-controller 
+
+    (venv)  % brew install helm
+    (venv)  % helm repo add elastic https://helm.elastic.co
+    "elastic" has been added to your repositories
+    (venv)  % helm install elasticsearch elastic/elasticsearch
+    NAME: elasticsearch
+    LAST DEPLOYED: Fri Apr 28 14:22:31 2023
+    NAMESPACE: default
+    STATUS: deployed
+    REVISION: 1
+    NOTES:
+    1. Watch all cluster members come up.
+    $ kubectl get pods --namespace=default -l app=elasticsearch-master -w
+    2. Retrieve elastic user's password.
+    $ kubectl get secrets --namespace=default elasticsearch-master-credentials -ojsonpath='{.data.password}' | base64 -d
+    3. Test cluster health using Helm test.
+    $ helm --namespace=default test elasticsearch
+
+Then
+    % kubectl get pods --namespace=default -l app=elasticsearch-master -w 
+    % kubectl logs -l app=elasticsearch --all-containers --ignore-errors
+    % kubectl logs -f app=elasticsearch --all-containers --ignore-errors
+    % kubectl logs -f --namespace=default -l app=elasticsearch
+
+
+
+
+
+
+
+
+
+
 
 
