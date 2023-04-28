@@ -56,6 +56,8 @@ You may also need to make the image public as well.
 
 https://minikube.sigs.k8s.io/docs/start/ 
 
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.4.1/components.yaml 
+
 ## Kubernetes deployment
 
     kubectl apply -f api.yaml
@@ -130,3 +132,7 @@ enter http://0.0.0.0:8080 into the Host input field
 
 Inspiration and code for FastAPI setup:
 [How to continuously deploy a fastAPI to AWS Lambda with AWS SAM](https://iwpnd.pw/articles/2020-01/deploy-fastapi-to-aws-lambda).
+
+## helpful links 
+
+https://www.linuxsysadmins.com/service-unavailable-kubernetes-metrics/
