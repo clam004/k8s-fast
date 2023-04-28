@@ -180,8 +180,11 @@ As Locust swarms your endpoint, you should see the usage go up on your horizonta
     kf-api   Deployment/kf-api   323%/50%   1         10        4          4m
     kf-api   Deployment/kf-api   323%/50%   1         10        7          4m15s
     kf-api   Deployment/kf-api   308%/50%   1         10        7          4m45s
+    kf-api   Deployment/kf-api   47%/50%    1         10        7          5m45s
+    kf-api   Deployment/kf-api   47%/50%    1         10        7          6m45s
 
-you should see what if the TARGETS ration goes abive 50%:50%, more REPLICAS are spun up
+you should see what if the TARGETS ratio goes above 50%:50%, more REPLICAS are spun up
+to meet that demand, bringing down the ratio below 50%:50%
 
 ## Teardown Kubernetes
 
