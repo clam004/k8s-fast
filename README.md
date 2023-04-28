@@ -56,7 +56,15 @@ You may also need to make the image public as well.
 
 https://minikube.sigs.k8s.io/docs/start/ 
 
-you need a metrics server for horizontal pod scaling
+### you need a metrics server for horizontal pod scaling
+
+https://www.bogotobogo.com/DevOps/Docker/Docker-Kubernetes-Horizontal-Pod-Autoscaler.php
+
+metrics-server monitoring needs to be deployed in the cluster to provide metrics via the resource metrics API, as Horizontal Pod Autoscaler uses this API to collect metrics:
+
+    (venv) you@you % minikube addons enable metrics-server
+
+or
 
     (venv) you@you % kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.4.1/components.yaml 
 
@@ -78,13 +86,15 @@ To scale the deployment, apply a HorizontalPodAutoscaler. Either:
 
     kubectl apply -f autoscale.yaml
 
-like this:
+note sure which order these go in
 
     (venv) you@you % kubectl apply -f api.yaml
     service/kf-api-svc created
     deployment.apps/kf-api created
+
     (venv) you@you % kubectl apply -f autoscale.yaml 
     horizontalpodautoscaler.autoscaling/kf-api-hpa created
+
     (venv) you@you %  kubectl port-forward service/kf-api-svc 8080
     Forwarding from 127.0.0.1:8080 -> 8080
     Forwarding from [::1]:8080 -> 8080
@@ -93,6 +103,23 @@ like this:
 or:
 
     kubectl autoscale deployment kf-api --cpu-percent=50 --min=1 --max=10
+
+like this:
+
+    (venv) you@you % kubectl autoscale deployment kf-api --cpu-percent=50 --min=1 --max=10
+    horizontalpodautoscaler.autoscaling/kf-api autoscaled
+
+Check the current status of autoscaler
+
+    (venv) you@you % kubectl get hpa
+    NAME         REFERENCE           TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+    kf-api       Deployment/kf-api   <unknown>/50%   1         10        1          73s
+    kf-api-hpa   Deployment/kf-api   1%/50%          1         10        1          10h
+
+
+For continuous monitoring
+
+    (venv) you@you % kubectl get hpa -w
 
 ## Load testing with Locust
 
@@ -138,3 +165,17 @@ Inspiration and code for FastAPI setup:
 ## helpful links 
 
 https://www.linuxsysadmins.com/service-unavailable-kubernetes-metrics/
+
+
+## helpful snippets
+
+    $ kubectl edit deployments.apps -n kube-system metrics-server  
+```
+    spec:
+      containers:
+      - args:
+        - --cert-dir=/tmp
+        - --secure-port=4443
+        - --kubelet-insecure-tls=true
+        - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+```
