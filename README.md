@@ -54,7 +54,7 @@ You may also need to make the image public as well.
 
 ## Get minikube and kubectl
 
-Next, if you dont already, you need local Kubernetes and a command line tool for communicating with a Kubernetes cluster's control plane, using the Kubernetes API. This tool is named kubectl.
+Next, if you dont already, you need local Kubernetes and a command line tool for communicating with a Kubernetes cluster's control plane, using the Kubernetes API. This tool is named kubectl. https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/ 
 
     brew install kubectl 
 
@@ -213,7 +213,7 @@ https://stackoverflow.com/questions/54106725/docker-kubernetes-mac-autoscaler-un
 
 ## Trouble shooting your deployment
 
-To see the logs that would have been streamed to you in your terminal had you done `uvicorn service.main:app --host 0.0.0.0 --port 8080 --reload` only to view those outputs within your pod/container, get the name of your pod:
+To see the logs that would have been streamed to you in your terminal had you done `uvicorn service.main:app --host 0.0.0.0 --port 8080 --reload` only to view those outputs within your pod/container, https://stackoverflow.com/questions/39454962/kubectl-logs-continuously,  get the name of your pod:
 
     (venv) % kubectl get pods 
     NAME                      READY   STATUS    RESTARTS      AGE
