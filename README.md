@@ -56,7 +56,7 @@ You may also need to make the image public as well.
 
 https://minikube.sigs.k8s.io/docs/start/ 
 
-    you need a metrics server for horizontal pod scaling
+you need a metrics server for horizontal pod scaling
 
     (venv) you@you % kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.4.1/components.yaml 
 
