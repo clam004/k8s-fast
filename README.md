@@ -59,7 +59,7 @@ Next, if you dont already, you need local Kubernetes and a command line tool for
     brew install kubectl 
 
 A local Kubernetes is minikube https://minikube.sigs.k8s.io/docs/start/ 
-You wont be able to use $ kubectl until after you have started a control plane node minikube in cluster minikube
+You wont be able to use $ kubectl until after you have started a control plane node minikube in cluster minikube https://www.shellhacks.com/minikube-start-with-more-memory-cpus/ 
 
     (venv) u@u % minikube start --memory 8192 --cpus 4
     😄  minikube v1.30.1 on Darwin 12.0.1
