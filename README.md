@@ -90,7 +90,18 @@ or:
 
     kubectl autoscale deployment kf-api --cpu-percent=50 --min=1 --max=10
 
-## Load testing
+## Load testing with Locust
+
+in a file called locustfile.py you progam the test you want to run
+
+```python
+from locust import HttpUser, task
+
+class LoadTesting(HttpUser):
+    @task
+    def hello_world(self):
+        self.client.post("/api/v1/hello", json={})
+```
 
 Use `locust` to simulate a high load on the API
 
