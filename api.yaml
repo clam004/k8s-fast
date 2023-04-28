@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: kf-api
-          image: 4oh4/kubernetes-fastapi:1.0.0
+          image: clam004/k8s-fast:1.0
           ports:
             - containerPort: 8080
           imagePullPolicy: Always

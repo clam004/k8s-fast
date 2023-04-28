@@ -2,6 +2,14 @@
 
 Python FastAPI with Dockerfile and configuration for Kubernetes
 
+## Python Virtual Environment 
+
+https://docs.python.org/3/tutorial/venv.html 
+
+    you@you % python3 -m venv venv
+    you@you % source venv/bin/activate
+    (venv) you@you % 
+
 ## Development setup
 
 To run (in isolation), either:
@@ -32,31 +40,17 @@ The API responds with a greeting, and the result of a long-running calculation o
       "elapsed_time": 0.0057561397552490234
     }
 
-## Push the container image to Docker Hub
+## Before using Kubernetes Push the container image to Docker Hub
 
 If you dont already, you need a DockerHUb account and to be signed-in in terminal
 
     docker login
 
-Before using kubernetes, push the container to Docker Hub, and change all references to the image accordingly. Replace "clam004" with your Docker Hub ID:
+push the container to Docker Hub, and change all references to the image accordingly. Replace "clam004" with your Docker Hub ID:
 
     docker push clam004/k8s-fast:1.0
 
 You may also need to make the image public as well.
-
-## Google Cloud GKE initial setup
-
-Follow the steps in this section if deploying to Google Cloud GKE, or skip if deploying to a ready-configured Kubernetes cluster. From command line, with [Google Cloud SDK](https://cloud.google.com/sdk/docs/install) installed:
-
-    gcloud components install kubectl
-
-    gcloud config set project my-project-id
-    gcloud config set compute/zone europe-west2-a
-
-Create a cluster and get credentials for `kubectl`:
-
-    gcloud container clusters create my-cluster-name --num-nodes=3
-    gcloud container clusters get-credentials my-cluster-name
 
 ## Kubernetes deployment
 
@@ -64,7 +58,13 @@ Create a cluster and get credentials for `kubectl`:
 
 If working locally, e.g. using `minikube`, use port forwarding to expose the service:
 
-    kubectl port-forward service/kf-api-svc 8080
+    (venv) you@you % kubectl apply -f api.yaml
+    service/kf-api-svc created
+    deployment.apps/kf-api created
+    (venv) you@you %  kubectl port-forward service/kf-api-svc 8080
+    Forwarding from 127.0.0.1:8080 -> 8080
+    Forwarding from [::1]:8080 -> 8080
+    Handling connection for 8080
 
 To scale the deployment, apply a HorizontalPodAutoscaler. Either:
 
