@@ -61,7 +61,13 @@ Next, if you dont already, you need local Kubernetes and a command line tool for
 A local Kubernetes is minikube https://minikube.sigs.k8s.io/docs/start/ 
 You wont be able to use $ kubectl until after you have started a control plane node minikube in cluster minikube
 
-    minikube start
+    (venv) u@u % minikube start --memory 8192 --cpus 4
+    😄  minikube v1.30.1 on Darwin 12.0.1
+    ✨  Automatically selected the docker driver
+    📌  Using Docker Desktop driver with root privileges
+    👍  Starting control plane node minikube in cluster minikube
+    🚜  Pulling base image ...
+    🔥  Creating docker container (CPUs=4, Memory=8192MB) ...- 
 
 ### you need a metrics server for horizontal pod scaling
 
@@ -208,10 +214,9 @@ https://www.linuxsysadmins.com/service-unavailable-kubernetes-metrics/
 
 https://stackoverflow.com/questions/54106725/docker-kubernetes-mac-autoscaler-unable-to-find-metrics 
 
-
 ## helpful snippets
 
-## Trouble shooting your deployment
+### Trouble shooting your deployment
 
 To see the logs that would have been streamed to you in your terminal had you done `uvicorn service.main:app --host 0.0.0.0 --port 8080 --reload` only to view those outputs within your pod/container, https://stackoverflow.com/questions/39454962/kubectl-logs-continuously,  get the name of your pod:
 
@@ -267,33 +272,21 @@ or
     Normal  SuccessfulRescale  23m                 horizontal-pod-autoscaler  New size: 6; reason: cpu resource utilization (percentage of request) above target
     Normal  SuccessfulRescale  15m (x2 over 115m)  horizontal-pod-autoscaler  New size: 1; reason: All metrics below target
 
+Notice the `<app-name>` `Name:   kf-api` and `<namespace>` ` Namespace:   default` which we will use below
 When doing horizontal pod scalling, how do i get logs from all the pods? 
 https://theiconic.tech/tail-logs-from-multiple-kubernetes-pods-the-easy-way-71401b84d7f 
 https://spot.io/resources/kubernetes-architecture/kubernetes-tutorial-successful-deployment-of-elasticsearch/
 https://stackoverflow.com/questions/33069736/how-do-i-get-logs-from-all-pods-of-a-kubernetes-replication-controller 
 
-    (venv)  % brew install helm
-    (venv)  % helm repo add elastic https://helm.elastic.co
-    "elastic" has been added to your repositories
-    (venv)  % helm install elasticsearch elastic/elasticsearch
-    NAME: elasticsearch
-    LAST DEPLOYED: Fri Apr 28 14:22:31 2023
-    NAMESPACE: default
-    STATUS: deployed
-    REVISION: 1
-    NOTES:
-    1. Watch all cluster members come up.
-    $ kubectl get pods --namespace=default -l app=elasticsearch-master -w
-    2. Retrieve elastic user's password.
-    $ kubectl get secrets --namespace=default elasticsearch-master-credentials -ojsonpath='{.data.password}' | base64 -d
-    3. Test cluster health using Helm test.
-    $ helm --namespace=default test elasticsearch
 
-Then
-    % kubectl get pods --namespace=default -l app=elasticsearch-master -w 
-    % kubectl logs -l app=elasticsearch --all-containers --ignore-errors
-    % kubectl logs -f app=elasticsearch --all-containers --ignore-errors
-    % kubectl logs -f --namespace=default -l app=elasticsearch
+    (venv)  % kubectl -n <namespace> logs -f deployment/<app-name> --all-containers=true --since=10m
+    (venv)  % kubectl -n default logs -f deployment/kf-api --all-containers=true --since=10m 
+
+## The ELK stack for K8s
+
+https://logz.io/blog/deploying-the-elk-stack-on-kubernetes-with-helm/
+
+
 
 
 
