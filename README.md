@@ -10,7 +10,7 @@ https://docs.python.org/3/tutorial/venv.html
     you@you % source venv/bin/activate
     (venv) you@you % 
 
-## Development setup
+## fastAPI Development setup
 
 To run (in isolation), either:
 
@@ -42,7 +42,7 @@ The API responds with a greeting, and the result of a long-running calculation o
 
 ## Before using Kubernetes Push the container image to Docker Hub
 
-If you dont already, you need a DockerHUb account and to be signed-in in terminal
+If you dont already, you need to have docker and your docker daemon running, a DockerHUb account and to be signed into it in terminal
 
     docker login
 
@@ -52,9 +52,16 @@ push the container to Docker Hub, and change all references to the image accordi
 
 You may also need to make the image public as well.
 
-## get minikube
+## Get minikube and kubectl
 
-https://minikube.sigs.k8s.io/docs/start/ 
+Next, if you dont already, you need local Kubernetes and a command line tool for communicating with a Kubernetes cluster's control plane, using the Kubernetes API. This tool is named kubectl.
+
+    brew install kubectl 
+
+A local Kubernetes is minikube https://minikube.sigs.k8s.io/docs/start/ 
+You wont be able to use $ kubectl until after you have started a control plane node minikube in cluster minikube
+
+    minikube start
 
 ### you need a metrics server for horizontal pod scaling
 
@@ -97,6 +104,9 @@ If working locally, e.g. using `minikube`, use port forwarding to expose the ser
     Forwarding from 127.0.0.1:8080 -> 8080
     Forwarding from [::1]:8080 -> 8080
     Handling connection for 8080
+
+Once you do this you will be able to find your fastAPI docs at http://localhost:8080/docs, http://127.0.0.1:8080/docs, or http://0.0.0.0:8080/docs 
+which are all the same thing. 
 
 To scale the deployment, apply a HorizontalPodAutoscaler. Either:
 
