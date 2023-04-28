@@ -105,11 +105,11 @@ to test the endpoint http://0.0.0.0:8080/api/v1/hello/
 
 enter http://0.0.0.0:8080 into the Host input field 
 
-![Test drive the API](./resources/locustboard2.png)
+![Test drive the API](./resources/locustboard.png)
 
 ![Load testing with Locust](./resources/locust.png)
 
-## Teardown
+## Teardown Kubernetes
 
     kubectl delete deployment kf-api
     kubectl delete svc kf-api-svc
