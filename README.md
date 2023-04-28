@@ -273,11 +273,12 @@ or
     Normal  SuccessfulRescale  15m (x2 over 115m)  horizontal-pod-autoscaler  New size: 1; reason: All metrics below target
 
 Notice the `<app-name>` `Name:   kf-api` and `<namespace>` ` Namespace:   default` which we will use below
-When doing horizontal pod scalling, how do i get logs from all the pods? 
-https://theiconic.tech/tail-logs-from-multiple-kubernetes-pods-the-easy-way-71401b84d7f 
-https://spot.io/resources/kubernetes-architecture/kubernetes-tutorial-successful-deployment-of-elasticsearch/
-https://stackoverflow.com/questions/33069736/how-do-i-get-logs-from-all-pods-of-a-kubernetes-replication-controller 
+When doing horizontal pod scaling, how do i get logs from all the pods? 
+https://theiconic.tech/tail-logs-from-multiple-kubernetes-pods-the-easy-way-71401b84d7f
 
+https://spot.io/resources/kubernetes-architecture/kubernetes-tutorial-successful-deployment-of-elasticsearch/
+
+https://stackoverflow.com/questions/33069736/how-do-i-get-logs-from-all-pods-of-a-kubernetes-replication-controller 
 
     (venv)  % kubectl -n <namespace> logs -f deployment/<app-name> --all-containers=true --since=10m
     (venv)  % kubectl -n default logs -f deployment/kf-api --all-containers=true --since=10m 
