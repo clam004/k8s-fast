@@ -272,20 +272,40 @@ or
     Normal  SuccessfulRescale  23m                 horizontal-pod-autoscaler  New size: 6; reason: cpu resource utilization (percentage of request) above target
     Normal  SuccessfulRescale  15m (x2 over 115m)  horizontal-pod-autoscaler  New size: 1; reason: All metrics below target
 
-Notice the `<app-name>` `Name:   kf-api` and `<namespace>` ` Namespace:   default` which we will use below
+Notice the `<app-name>` `Name:   kf-api` and `<namespace>` ` Namespace:   default` which we will use below:
 When doing horizontal pod scaling, how do i get logs from all the pods? 
+
 https://theiconic.tech/tail-logs-from-multiple-kubernetes-pods-the-easy-way-71401b84d7f
-
-https://spot.io/resources/kubernetes-architecture/kubernetes-tutorial-successful-deployment-of-elasticsearch/
-
-https://stackoverflow.com/questions/33069736/how-do-i-get-logs-from-all-pods-of-a-kubernetes-replication-controller 
 
     (venv)  % kubectl -n <namespace> logs -f deployment/<app-name> --all-containers=true --since=10m
     (venv)  % kubectl -n default logs -f deployment/kf-api --all-containers=true --since=10m 
+you can save them to a file
+    (venv)  %  kubectl logs pod_name > app.log
 
 ## The ELK stack for K8s
 
+https://phoenixnap.com/kb/elasticsearch-helm-chart 
 https://logz.io/blog/deploying-the-elk-stack-on-kubernetes-with-helm/
+
+    curl -O https://raw.githubusercontent.com/elastic/Helm-charts/master/elasticsearch/examples/minikube/values.yaml
+
+    (venv) @  % helm install elasticsearch elastic/elasticsearch -f ./values.yaml        
+    NAME: elasticsearch
+    LAST DEPLOYED: Fri Apr 28 16:51:06 2023
+    NAMESPACE: default
+    STATUS: deployed
+    REVISION: 1
+    NOTES:
+    1. Watch all cluster members come up.
+    $ kubectl get pods --namespace=default -l app=elasticsearch-master -w
+    2. Retrieve elastic user's password.
+    $ kubectl get secrets --namespace=default elasticsearch-master-credentials -ojsonpath='{.data.password}' | base64 -d
+    3. Test cluster health using Helm test.
+    $ helm --namespace=default test elasticsearch
+
+As noted at the end of the output, you can verify your Elasticsearch pods status with:
+
+    % kubectl get pods --namespace=default -l app=elasticsearch-master -w
 
 
 
