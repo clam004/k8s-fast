@@ -2,6 +2,10 @@
 
 Python FastAPI with Dockerfile and configuration for Kubernetes
 
+## Set your API_KEY by creating a .env file in the root directory
+
+![.env file with API_KEY](./resources/env.png)
+
 ## Python Virtual Environment 
 
 https://docs.python.org/3/tutorial/venv.html 
